@@ -1,0 +1,341 @@
+---
+title: "CLI"
+description: "Sign in once, then manage posts, brand identities, integrations, schedules, and GEO projects from the terminal with the kolaria CLI."
+authors:
+  - handle: dominik
+
+docolin:
+  schema_version: 1
+  kind: tools/kolaria/devtools/cli
+  type: reference
+  applies_to:
+    - kolaria
+    - kolaria-cli
+  language: en
+  difficulty: intermediate
+  time_estimate: 12m
+  status: stable
+  aliases:
+    - Kolaria CLI
+    - kolaria command
+    - command line
+    - terminal access
+    - kolaria auth login
+    - GEO CLI
+  next: ./mcp.mdx
+---
+
+The Kolaria CLI is published on npm as [`kolaria`](https://www.npmjs.com/package/kolaria) and installs a `kolaria` binary. It wraps the public API (through the official TypeScript SDK) so you can script your workspace: posts, brand identities, integrations, schedules, and the full GEO surface (projects, prompts, competitors, scans, visibility, content briefs, agent readiness, AI traffic).
+
+Source: [github.com/gsmmediaro/kolaria-cli](https://github.com/gsmmediaro/kolaria-cli).
+
+## Install
+
+<CodeGroup>
+```bash bun
+bun add -g kolaria
+```
+
+```bash npm
+npm i -g kolaria
+```
+
+```bash pnpm
+pnpm add -g kolaria
+```
+
+```bash yarn
+yarn global add kolaria
+```
+</CodeGroup>
+
+You can also run any command without installing using `npx kolaria <command>` or `bunx kolaria <command>`.
+
+Verify the install:
+
+```bash
+kolaria --version
+```
+
+## Authentication
+
+There are two ways to authenticate. Use the browser login when a person is at the keyboard, and an API key when the CLI runs unattended.
+
+### Sign in with your browser (recommended)
+
+```bash
+kolaria auth login
+```
+
+This starts an OAuth device authorization flow: the CLI prints a short verification code, opens the Kolaria sign-in page in your browser, and waits until you approve the code. Access and refresh tokens are saved to the local config file and refreshed automatically, so you do not copy any tokens by hand.
+
+The session acts as you, inside the organization you pick during sign-in. Every request is checked against the permissions attached to that session, the same way API requests are checked against key scopes.
+
+<Tip>
+  On a remote machine or inside a container, use `kolaria auth login --no-browser` to print the verification URL instead of opening a browser.
+</Tip>
+
+For scripts that drive the login themselves, `kolaria auth login --json` streams newline-delimited JSON with one object per line: a `pending` event that carries the verification URL and code, followed by either a `ready` event or an `error` event.
+
+Sign out and remove the stored tokens:
+
+```bash
+kolaria auth logout
+```
+
+### Use an API key (headless and CI)
+
+An API key bypasses the login entirely. Create one under **API Keys** in the dashboard with the scopes the job needs (see [Authentication](/api/authentication)), then pass it in one of three ways:
+
+```bash
+# Environment variable (recommended for CI)
+KOLARIA_API_KEY=klra_xxx kolaria posts list
+
+# Stored in the local config
+kolaria config set api-key klra_xxx
+
+# Per command
+kolaria posts list --api-key klra_xxx
+```
+
+`kolaria init` does the same thing interactively: it prompts for the key, or accepts `--api-key` directly.
+
+```bash
+kolaria init
+kolaria init --api-key klra_xxx
+```
+
+A key only carries the scopes you selected when you created it. Commands that need a scope the key does not have fail with exit code 3.
+
+## Configuration
+
+The local config file lives at the OS-standard config path (on macOS: `~/Library/Preferences/kolaria-cli/config.json`). It is created with owner-only permissions.
+
+```bash
+kolaria config path
+kolaria config get
+kolaria config get api-key
+kolaria config set api-key klra_xxx
+kolaria config set base-url https://api.kolaria.com
+```
+
+Config keys are `api-key` and `base-url`. Environment variables override stored values:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `KOLARIA_API_KEY` | none | API key for requests. Bypasses `auth login`. |
+| `KOLARIA_BASE_URL` | `https://api.kolaria.com` | API base URL. |
+
+## Output
+
+Commands print formatted tables in a terminal and switch to JSON automatically when stdout is redirected or piped. Explicit output flags win over that automatic choice: `--json` always prints JSON, and `kolaria posts get <postId> --markdown` always prints Markdown.
+
+```bash
+kolaria posts list --status draft --json | jq -r '.posts[].id'
+kolaria posts get post_abc123 --markdown > post.md
+```
+
+## Quickstart
+
+```bash
+kolaria auth login
+kolaria integrations github --owner gsmmediaro --repo kolaria
+kolaria brands generate --website-url https://kolaria.com --wait
+kolaria posts generate --content-type changelog --lookback last_7_days --wait
+kolaria posts list --status draft --limit 10
+kolaria geo projects list
+```
+
+Run `kolaria <topic> --help` to see every command and flag for a topic.
+
+## Posts
+
+| Command | Description |
+| --- | --- |
+| `kolaria posts list` | List posts in the current organization |
+| `kolaria posts get <postId>` | Fetch a single post (`--markdown` prints only the body) |
+| `kolaria posts generate` | Queue an async post-generation job |
+| `kolaria posts status <jobId>` | Read the status of a generation job (`--watch` polls) |
+| `kolaria posts update <postId>` | Update title, slug, markdown, or status |
+| `kolaria posts delete <postId>` | Delete a post (`--yes` skips the confirmation) |
+
+### List with filters
+
+```bash
+kolaria posts list --status draft --limit 10
+kolaria posts list --content-type changelog,blog_post --sort desc
+kolaria posts list --brand brand_abc --page 2 --json
+```
+
+`--status` and `--content-type` accept comma-separated lists. `--sort` is `asc` or `desc` by creation date.
+
+### Generate content
+
+```bash
+kolaria posts generate \
+  --content-type changelog \
+  --brand brand_abc \
+  --github-integration integration_xyz \
+  --lookback last_7_days \
+  --wait
+```
+
+`--content-type` is one of `changelog`, `blog_post`, `linkedin_post`, or `twitter_post`. `--lookback` is one of `current_day`, `yesterday`, `last_7_days`, `last_14_days`, or `last_30_days`. `--github-integration` and `--linear-integration` are repeatable. `--wait` polls until the job finishes (`--poll-interval` seconds, `--timeout-mins` minutes); drop it to get the `jobId` back immediately and check later with `kolaria posts status <jobId> --watch`.
+
+### Update content
+
+```bash
+kolaria posts update post_abc123 --title "New title" --status published
+kolaria posts update post_abc123 --markdown-file ./post.md
+cat post.md | kolaria posts update post_abc123 --markdown-file -
+```
+
+`--status` is `draft` or `published`.
+
+### Delete
+
+```bash
+kolaria posts delete post_abc123 --yes
+```
+
+## Brand identities
+
+| Command | Description |
+| --- | --- |
+| `kolaria brands list` | List brand identities |
+| `kolaria brands get <brandIdentityId>` | Fetch a single brand identity |
+| `kolaria brands generate` | Queue an async brand-identity generation from a website URL |
+| `kolaria brands status <jobId>` | Read the status of a brand-identity generation job (`--watch` polls) |
+| `kolaria brands update <brandIdentityId>` | Update name, website, company details, tone, audience, language, instructions, or the default flag |
+| `kolaria brands delete <brandIdentityId>` | Delete a non-default brand identity |
+
+### Generate from a website
+
+```bash
+kolaria brands generate --website-url https://acme.com --name Acme --wait
+```
+
+### Update settings
+
+```bash
+kolaria brands update brand_abc --tone Professional
+kolaria brands update brand_abc --custom-instructions "Always include PR links"
+kolaria brands update brand_abc --audience "Developers evaluating CI tools"
+kolaria brands update brand_abc --default
+```
+
+Tone options: `Conversational`, `Professional`, `Casual`, `Formal`. Pass `--custom-tone` for a free-text tone instead. `--company-name` and `--company-description` accept an empty string to clear the value.
+
+## Integrations
+
+| Command | Description |
+| --- | --- |
+| `kolaria integrations list` | List GitHub, Linear, and Slack integrations |
+| `kolaria integrations github` | Connect a GitHub repository |
+| `kolaria integrations remove <integrationId>` | Disconnect a GitHub or Linear integration |
+
+### Connect a repository
+
+```bash
+kolaria integrations github --owner gsmmediaro --repo kolaria
+kolaria integrations github --owner acme --repo website --branch develop
+kolaria integrations github --owner acme --repo private-app --token ghp_xxx
+```
+
+`--branch` defaults to the repository's default branch. A token is only required for private repositories that do not have the Kolaria GitHub App installed.
+
+## Schedules
+
+Manage the cron-based schedules described in [Scheduled Automation](/automation/scheduled).
+
+| Command | Description |
+| --- | --- |
+| `kolaria schedules list` | List schedules (`--repo repo_a,repo_b` filters by repository) |
+| `kolaria schedules create` | Create a schedule from flags or a JSON file |
+| `kolaria schedules update <scheduleId>` | Replace a schedule with a full JSON body |
+| `kolaria schedules delete <scheduleId>` | Delete a schedule |
+
+### Create a schedule
+
+```bash
+kolaria schedules create \
+  --name "Daily changelog" \
+  --frequency daily --hour 9 --minute 0 \
+  --output-type changelog \
+  --repository repo_abc \
+  --lookback yesterday \
+  --enabled
+```
+
+For weekly schedules pass `--day-of-week` (0-6, Sunday is 0); for monthly schedules pass `--day-of-month` (1-31). `--output-type` is one of `changelog`, `blog_post`, `linkedin_post`, or `twitter_post`; image schedules are not available from the CLI yet, so create those in the dashboard or through `POST /v1/schedules`. `--repository` is repeatable. Add `--brand-voice <brandIdentityId>` to pin a brand identity and `--auto-publish` to publish changelogs and blog posts instead of saving drafts. Times are in UTC.
+
+### From a JSON file
+
+```bash
+kolaria schedules create --config-file ./schedule.json
+cat schedule.json | kolaria schedules create --config-file -
+kolaria schedules update sched_abc --config-file ./schedule.json
+```
+
+The JSON body matches the `POST /v1/schedules` request shape. When `--config-file` is set, all other flags are ignored.
+
+## GEO
+
+GEO commands are scoped to a project. Run `kolaria geo projects list` first to find the project ID, then pass it as the first argument to the other commands. Project-scoped commands need a plan that includes GEO.
+
+| Topic | Commands |
+| --- | --- |
+| `kolaria geo projects` | `list`, `get <projectId>`, `create --name <name> [--brand-settings-id <id>]`, `update <projectId>`, `delete <projectId>` |
+| `kolaria geo settings` | `get <projectId>`, `update <projectId> --config-file <file>` (replaces the whole settings document) |
+| `kolaria geo prompts` | `list <projectId>`, `create <projectId> --prompt <text>`, `update <projectId> <promptId> --enabled` or `--no-enabled`, `delete <projectId> <promptId>`, `import <projectId> --config-file <json or csv>` |
+| `kolaria geo sequences` | `list <projectId>`, `create <projectId> --name <name> --step <text>...`, `update <projectId> <sequenceId>`, `run <projectId> <sequenceId>`, `delete <projectId> <sequenceId>` |
+| `kolaria geo competitors` | `list <projectId>`, `upsert <projectId> --name <name> [--domain ...] [--kind direct or indirect]`, `suggestions <projectId> --domain <domain>`, `import <projectId> --config-file <file>`, `delete <projectId> <name>` |
+| `kolaria geo scans` | `start <projectId> [--wait]`, `list <projectId> [--page] [--limit]`, `get <projectId> <scanId>` |
+| `kolaria geo visibility` | `overview <projectId>`, `timeseries <projectId>`, `prompt-results <projectId>`, `competitor-share <projectId>`, `competitor <projectId> <brand>`, `language-share <projectId>` (all accept `--days` or `--from` and `--to`) |
+| `kolaria geo gaps` | `list <projectId>` |
+| `kolaria geo briefs` | `list <projectId>`, `get <projectId> <briefId>`, `create <projectId> --topic <text> [--auto-approve]`, `approve <projectId> <briefId>` |
+| `kolaria geo agent-readiness` | `get <projectId>`, `scan <projectId>` |
+| `kolaria geo traffic` | `overview <projectId>`, `log <projectId>`, `journeys <projectId>`, `journey <projectId> <journeyId>`, `pages <projectId>`. The ingest commands are organization-level and take no positional project ID: `setup`, `token [--project <projectId>] [--show-token]`, `rotate-token [--project <projectId>] [-y]` |
+
+Examples:
+
+```bash
+kolaria geo projects create --name "Acme" --brand-settings-id brand_abc
+kolaria geo prompts create proj_123 --prompt "Which tools lead this category?"
+kolaria geo scans start proj_123 --wait
+kolaria geo visibility overview proj_123 --days 30
+kolaria geo briefs create proj_123 --topic "Acme vs alternatives" --auto-approve
+kolaria geo traffic token --project proj_123 --show-token
+```
+
+<Warning>
+  Scans, sequence runs, and content briefs use billed AI credits. `kolaria geo traffic token` and `rotate-token` print secrets only with `--show-token`; treat that output as a secret.
+</Warning>
+
+## Global flags
+
+These work on every command:
+
+| Flag | Description |
+| --- | --- |
+| `--json` | Print machine-readable JSON instead of a formatted table |
+| `--api-key <value>` | Override the configured key (or `KOLARIA_API_KEY`) |
+| `--base-url <value>` | Override the API base URL (or `KOLARIA_BASE_URL`) |
+
+Destructive commands (`delete`, `remove`, `rotate-token`) ask for confirmation unless you pass `-y` or `--yes`.
+
+## Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| 0 | Success |
+| 1 | Generic failure |
+| 2 | Usage error (bad flag, missing required argument) |
+| 3 | Authentication failure (no key or session, 401, 403) |
+| 4 | Rate limited (429) |
+| 5 | Not found (404, missing resource) |
+| 6 | Network failure |
+
+## Source
+
+The CLI is open source at [github.com/gsmmediaro/kolaria-cli](https://github.com/gsmmediaro/kolaria-cli). Report issues there.
