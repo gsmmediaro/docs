@@ -1,37 +1,123 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mintlify Starter Kit",
+  "theme": "maple",
+  "name": "Kolaria Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#0E8A96",
+    "light": "#24D4DF",
+    "dark": "#1CC7D2"
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "overview",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/how-it-works",
+              "concepts/content-pipeline",
+              "concepts/brand-voice"
+            ]
+          },
+          {
+            "group": "GEO",
+            "pages": [
+              "geo/overview",
+              "geo/prompts-and-competitors",
+              "geo/traffic",
+              "geo/agent-readiness",
+              "geo/content-gaps-and-writer"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "integrations/overview",
+              "integrations/github",
+              "integrations/linear",
+              "integrations/slack",
+              "integrations/granola",
+              "integrations/google-search-console",
+              "integrations/framer",
+              "integrations/featul",
+              "integrations/kontentspace"
+            ]
+          },
+          {
+            "group": "Developer Tools",
+            "pages": [
+              "devtools/cli",
+              "devtools/mcp",
+              "devtools/raycast"
+            ]
+          },
+          {
+            "group": "Automation",
+            "pages": [
+              "automation/overview",
+              "automation/event-based",
+              "automation/scheduled"
+            ]
+          },
+          {
+            "group": "Content Types",
+            "pages": [
+              "content/blog-posts",
+              "content/changelogs",
+              "content/social-media"
+            ]
+          },
+          {
+            "group": "Organization",
+            "pages": [
+              "organization/workspace-setup",
+              "organization/team-management",
+              "organization/billing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "api/getting-started",
+              "api/authentication",
+              "api/rate-limits"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "api/rust-sdk",
+              "api/caching",
+              "api/common-tasks",
+              "api/types",
+              "api/pagination",
+              "api/agent-feedback"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api/webhooks/overview",
+              "api/webhooks/events"
+            ]
+          }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/light.svg",
@@ -53,13 +139,11 @@
   "contextual": {
     "options": [
       "copy",
-      "view",
+      "assistant",
+      "mcp",
       "chatgpt",
       "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
+      "perplexity"
     ]
   },
   "footer": {
@@ -68,5 +152,62 @@
       "github": "https://github.com/mintlify",
       "linkedin": "https://linkedin.com/company/mintlify"
     }
+  },
+  "description": "Documentation for Kolaria: track your brand across AI answer engines and turn your team's work into content.",
+  "api": {
+    "url": "full"
+  },
+  "background": {
+    "decoration": "windows"
+  },
+  "search": {
+    "prompt": "Search the Kolaria docs..."
+  },
+  "seo": {
+    "metatags": {
+      "twitter:site": "@kolaria"
+    }
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": {
+      "theme": {
+        "light": "github-light",
+        "dark": "github-dark"
+      }
+    }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/overview"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/getting-started"
+    },
+    {
+      "source": "/api-reference/openapi.json",
+      "destination": "https://api.kolaria.com/openapi.json",
+      "permanent": false
+    },
+    {
+      "source": "/sdk/getting-started",
+      "destination": "/api/getting-started"
+    },
+    {
+      "source": "/integrations/mcp",
+      "destination": "/devtools/mcp"
+    }
+  ],
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "This page is on a content pipeline of its own",
+      "description": "Looks like this page hasn't shipped yet. Try the [quickstart](/quickstart) or head back to the [overview](/overview)."
+    }
+  },
+  "metadata": {
+    "timestamp": true
   }
 }
