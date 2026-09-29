@@ -6,10 +6,10 @@ authors:
 
 docolin:
   schema_version: 1
-  kind: tools/notra/geo/traffic
+  kind: tools/kolaria/geo/traffic
   type: how-to
   applies_to:
-    - notra
+    - kolaria
   language: en
   difficulty: intermediate
   time_estimate: 10m
@@ -73,7 +73,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
     The package has zero dependencies and no Node APIs in the core, so it runs on edge runtimes. Install with npm, pnpm, or yarn if you prefer.
   </Step>
   <Step title="Set the environment variable">
-    Add the token as `NOTRA_GEO_TOKEN` in your site's environment variables, locally and at your hosting provider. Never hardcode or commit it.
+    Add the token as `KOLARIA_GEO_TOKEN` in your site's environment variables, locally and at your hosting provider. Never hardcode or commit it.
   </Step>
   <Step title="Add the proxy">
     Pick your framework. These are the snippets the dashboard generates; `endpoint` is the origin the SDK posts to and the SDK appends `/api/geo/ingest`.
@@ -85,7 +85,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
         import { after, NextResponse } from "next/server";
 
         const geo = createGeoProxy({
-          token: process.env.NOTRA_GEO_TOKEN!,
+          token: process.env.KOLARIA_GEO_TOKEN!,
           endpoint: "https://app.kolaria.com",
         });
 
@@ -102,7 +102,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
         import { createGeoHandler } from "@kolaria/geo/nuxt";
 
         const geo = createGeoHandler({
-          token: process.env.NOTRA_GEO_TOKEN!,
+          token: process.env.KOLARIA_GEO_TOKEN!,
           endpoint: "https://app.kolaria.com",
         });
 
@@ -119,7 +119,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
         import { createGeoMiddleware } from "@kolaria/geo/tanstack";
 
         const geo = createMiddleware().server(createGeoMiddleware({
-          token: process.env.NOTRA_GEO_TOKEN!,
+          token: process.env.KOLARIA_GEO_TOKEN!,
           endpoint: "https://app.kolaria.com",
         }));
 
@@ -135,7 +135,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
         import { createGeoMiddleware } from "@kolaria/geo/astro";
 
         export const onRequest = createGeoMiddleware({
-          token: import.meta.env.NOTRA_GEO_TOKEN!,
+          token: import.meta.env.KOLARIA_GEO_TOKEN!,
           endpoint: "https://app.kolaria.com",
         });
         ```
@@ -148,7 +148,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
         import { createGeoHandle } from "@kolaria/geo/sveltekit";
 
         export const handle = createGeoHandle({
-          token: env.NOTRA_GEO_TOKEN!,
+          token: env.KOLARIA_GEO_TOKEN!,
           endpoint: "https://app.kolaria.com",
         });
         ```
@@ -161,7 +161,7 @@ Journeys appear on the Overview page under the **Journeys** section and in the A
         import type { Context } from "@netlify/edge-functions";
 
         const geo = createGeoHandler({
-          token: Deno.env.get("NOTRA_GEO_TOKEN")!,
+          token: Deno.env.get("KOLARIA_GEO_TOKEN")!,
           endpoint: "https://app.kolaria.com",
         });
 
@@ -205,7 +205,7 @@ curl -X POST "https://api.kolaria.com/v1/geo/ingest/rotate-token?projectId=$PROJ
   -H "Authorization: Bearer $KOLARIA_API_KEY"
 ```
 
-Rotation invalidates every tracking token previously issued for the organization and returns a fresh one. Deployments still sending the old token stop being accepted immediately, so update `NOTRA_GEO_TOKEN` everywhere before you rotate.
+Rotation invalidates every tracking token previously issued for the organization and returns a fresh one. Deployments still sending the old token stop being accepted immediately, so update `KOLARIA_GEO_TOKEN` everywhere before you rotate.
 
 ## The Traffic page
 

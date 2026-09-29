@@ -6,7 +6,7 @@ authors:
 
 docolin:
   schema_version: 1
-  kind: tools/notra/api/types
+  kind: tools/kolaria/api/types
   type: reference
   applies_to:
     - kolaria-api
@@ -26,14 +26,14 @@ docolin:
 
 ## Using the SDK
 
-If you're using the `@usenotra/sdk` package, types are already included. Import them directly:
+If you're using the `@kolaria/sdk` package, types are already included. Import them directly:
 
 ```typescript
 import type {
   GetPostPost,
   ListPostsPost,
   Pagination,
-} from "@usenotra/sdk/models/operations";
+} from "@kolaria/sdk/models/operations";
 ```
 
 <Tip>
@@ -53,7 +53,7 @@ If you call the post endpoints directly with `fetch`, these types match the curr
 const listResponse = await fetch("https://api.kolaria.com/v1/posts", {
   headers: { Authorization: `Bearer ${process.env.KOLARIA_API_KEY}` },
 });
-const listData: NotraPostListResponse = await listResponse.json();
+const listData: KolariaPostListResponse = await listResponse.json();
 
 // Single post
 const postResponse = await fetch(
@@ -62,7 +62,7 @@ const postResponse = await fetch(
     headers: { Authorization: `Bearer ${process.env.KOLARIA_API_KEY}` },
   }
 );
-const postData: NotraPostResponse = await postResponse.json();
+const postData: KolariaPostResponse = await postResponse.json();
 
 // Updated post
 const updateResponse = await fetch(
@@ -80,7 +80,7 @@ const updateResponse = await fetch(
     }),
   }
 );
-const updateData: NotraPostUpdateResponse = await updateResponse.json();
+const updateData: KolariaPostUpdateResponse = await updateResponse.json();
 ```
 
 ### Type Definitions
@@ -134,30 +134,30 @@ export type Pagination = {
   totalItems: number;
 };
 
-export type NotraPostListResponse = {
+export type KolariaPostListResponse = {
   organization: Organization;
   posts: Post[];
   pagination: Pagination;
 };
 
-export type NotraPostResponse = {
+export type KolariaPostResponse = {
   organization: Organization;
   post: Post | null;
 };
 
-export type NotraPostUpdateRequest = {
+export type KolariaPostUpdateRequest = {
   title?: string;
   slug?: string | null;
   markdown?: string;
   status?: PostStatus;
 };
 
-export type NotraPostUpdateResponse = {
+export type KolariaPostUpdateResponse = {
   organization: Organization;
   post: Post;
 };
 
-export type NotraErrorResponse = {
+export type KolariaErrorResponse = {
   error: string;
   /** Present on authentication and authorization failures. */
   code?: string;
@@ -165,7 +165,7 @@ export type NotraErrorResponse = {
   recovery?: string;
 };
 
-export type NotraRateLimitErrorResponse = {
+export type KolariaRateLimitErrorResponse = {
   error: string;
   limit: number;
   remaining: number;
@@ -175,7 +175,7 @@ export type NotraRateLimitErrorResponse = {
 ```
 
 <Tip>
-  Copy these type definitions into a `types/notra.ts` file in your project.
+  Copy these type definitions into a `types/kolaria.ts` file in your project.
 </Tip>
 
 ### Zod Schemas

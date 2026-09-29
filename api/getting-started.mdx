@@ -6,7 +6,7 @@ authors:
 
 docolin:
   schema_version: 1
-  kind: tools/notra/api/getting-started
+  kind: tools/kolaria/api/getting-started
   type: tutorial
   applies_to:
     - kolaria-api
@@ -32,7 +32,7 @@ The Kolaria API is a REST API served from `https://api.kolaria.com`. Everything 
     Call endpoints directly with `curl` or `fetch`. Every endpoint group is available this way.
   </Card>
   <Card title="TypeScript SDK" icon="code">
-    Use `@usenotra/sdk` for typed requests and responses. Covers Content, Schedules, Event Triggers, Chats, Skills, Feedback and Agent endpoints.
+    Use `@kolaria/sdk` for typed requests and responses. Covers Content, Schedules, Event Triggers, Chats, Skills, Feedback and Agent endpoints.
   </Card>
 </CardGroup>
 
@@ -86,13 +86,13 @@ console.log(data.posts);
 ```
 
 ```typescript SDK
-import { Kolaria } from "@usenotra/sdk";
+import { Kolaria } from "@kolaria/sdk";
 
-const notra = new Kolaria({
+const kolaria = new Kolaria({
   bearerAuth: process.env.KOLARIA_API_KEY ?? "",
 });
 
-const result = await notra.content.listPosts();
+const result = await kolaria.content.listPosts();
 
 console.log(result.posts);
 ```
@@ -140,19 +140,19 @@ Scopes, presets and error responses are covered in [Authentication](/api/authent
 <CodeGroup>
 
 ```bash npm
-npm install @usenotra/sdk
+npm install @kolaria/sdk
 ```
 
 ```bash yarn
-yarn add @usenotra/sdk
+yarn add @kolaria/sdk
 ```
 
 ```bash pnpm
-pnpm add @usenotra/sdk
+pnpm add @kolaria/sdk
 ```
 
 ```bash bun
-bun add @usenotra/sdk
+bun add @kolaria/sdk
 ```
 
 </CodeGroup>
@@ -160,16 +160,16 @@ bun add @usenotra/sdk
 Initialize the client with your API key:
 
 ```typescript
-import { Kolaria } from "@usenotra/sdk";
+import { Kolaria } from "@kolaria/sdk";
 
-const notra = new Kolaria({
+const kolaria = new Kolaria({
   bearerAuth: process.env.KOLARIA_API_KEY ?? "",
 });
 
-const post = await notra.content.getPost({ postId: "post_abc" });
+const post = await kolaria.content.getPost({ postId: "post_abc" });
 ```
 
-The SDK exposes one namespace per endpoint group: `notra.content`, `notra.schedules`, `notra.eventTriggers`, `notra.chats`, `notra.skills`, `notra.feedback` and `notra.agent`. It is generated from the OpenAPI document and published at [github.com/gsmmediaro/typescript-sdk](https://github.com/gsmmediaro/typescript-sdk).
+The SDK exposes one namespace per endpoint group: `kolaria.content`, `kolaria.schedules`, `kolaria.eventTriggers`, `kolaria.chats`, `kolaria.skills`, `kolaria.feedback` and `kolaria.agent`. It is generated from the OpenAPI document and published at [github.com/gsmmediaro/typescript-sdk](https://github.com/gsmmediaro/typescript-sdk).
 
 <Note>
   GEO endpoints (projects, prompts, competitors, scans, visibility, gaps, briefs, agent readiness, traffic) are not in the SDK yet. Call them with `fetch` or generate a client from the OpenAPI document, see [Generate a client](/api/rust-sdk).

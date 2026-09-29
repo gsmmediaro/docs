@@ -6,7 +6,7 @@ authors:
 
 docolin:
   schema_version: 1
-  kind: tools/notra/api/authentication
+  kind: tools/kolaria/api/authentication
   type: reference
   applies_to:
     - kolaria-api
@@ -59,13 +59,13 @@ console.log(data);
 ```
 
 ```typescript SDK
-import { Kolaria } from "@usenotra/sdk";
+import { Kolaria } from "@kolaria/sdk";
 
-const notra = new Kolaria({
+const kolaria = new Kolaria({
   bearerAuth: process.env.KOLARIA_API_KEY ?? "",
 });
 
-const result = await notra.content.listPosts();
+const result = await kolaria.content.listPosts();
 console.log(result);
 ```
 </CodeGroup>
@@ -73,7 +73,7 @@ console.log(result);
 The header format is `Authorization: Bearer <credential>`. The scheme name is case-insensitive. Keys created in the dashboard start with `klra_`; OAuth access tokens are used the same way, see [OAuth](#oauth).
 
 <Note>
-  The SDK reads the key from the `bearerAuth` option. Its generated README refers to a `NOTRA_BEARER_AUTH` environment variable; any variable name works as long as you pass the value in.
+  The SDK reads the key from the `bearerAuth` option. Its generated README refers to a `KOLARIA_BEARER_AUTH` environment variable; any variable name works as long as you pass the value in.
 </Note>
 
 ## Create an API Key
@@ -326,18 +326,18 @@ if (!response.ok) {
 ```
 
 ```typescript SDK
-import { Kolaria } from "@usenotra/sdk";
-import * as errors from "@usenotra/sdk/models/errors";
+import { Kolaria } from "@kolaria/sdk";
+import * as errors from "@kolaria/sdk/models/errors";
 
-const notra = new Kolaria({
+const kolaria = new Kolaria({
   bearerAuth: process.env.KOLARIA_API_KEY ?? "",
 });
 
 try {
-  const result = await notra.content.listPosts();
+  const result = await kolaria.content.listPosts();
   console.log(result);
 } catch (error) {
-  if (error instanceof errors.NotraError) {
+  if (error instanceof errors.KolariaError) {
     console.log(error.message);
     console.log(error.statusCode);
     console.log(error.body);

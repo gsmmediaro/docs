@@ -7,7 +7,7 @@ authors:
 
 docolin:
   schema_version: 1
-  kind: tools/notra/api/rust-sdk
+  kind: tools/kolaria/api/rust-sdk
   type: how-to
   applies_to:
     - kolaria-api
@@ -19,14 +19,14 @@ docolin:
   status: stable
   aliases:
     - Rust SDK
-    - notra crate
+    - kolaria crate
     - Rust integration
     - OpenAPI client generation
   next: ./caching.mdx
 ---
 
 <Warning>
-  The community-maintained `notra` crate and its repository are no longer published. Kolaria does not ship an official Rust SDK. Use the OpenAPI document to generate a client, or call the REST API directly.
+  The community-maintained `kolaria` crate and its repository are no longer published. Kolaria does not ship an official Rust SDK. Use the OpenAPI document to generate a client, or call the REST API directly.
 </Warning>
 
 The API contract is published at [api.kolaria.com/openapi.json](https://api.kolaria.com/openapi.json) (OpenAPI 3.1). It is the same document the [API Reference](/api-reference/discovery/check-public-api-reachability) and the official [TypeScript SDK](/api/getting-started#sdk-installation) are built from, so a generated client matches the live endpoints, parameters and response shapes.
@@ -36,13 +36,13 @@ The API contract is published at [api.kolaria.com/openapi.json](https://api.kola
 Any OpenAPI 3.1 generator works. With [OpenAPI Generator](https://openapi-generator.tech):
 
 ```bash
-curl -s https://api.kolaria.com/openapi.json -o notra-openapi.json
+curl -s https://api.kolaria.com/openapi.json -o kolaria-openapi.json
 
 openapi-generator-cli generate \
-  -i notra-openapi.json \
+  -i kolaria-openapi.json \
   -g rust \
-  -o notra-client \
-  --additional-properties=packageName=notra,library=reqwest
+  -o kolaria-client \
+  --additional-properties=packageName=kolaria,library=reqwest
 ```
 
 Authentication is a single bearer scheme named `BearerAuth`, so configure the generated client's bearer token with your API key. Regenerate whenever you want to pick up new endpoints; the document is regenerated from the API source on every deploy.

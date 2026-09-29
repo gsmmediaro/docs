@@ -6,7 +6,7 @@ authors:
 
 docolin:
   schema_version: 1
-  kind: tools/notra/api/caching
+  kind: tools/kolaria/api/caching
   type: how-to
   applies_to:
     - kolaria-api
@@ -62,7 +62,7 @@ type ListPostsParams = {
 
 function createPostsCacheKey(params: ListPostsParams) {
   return [
-    "notra",
+    "kolaria",
     "posts",
     params.page ?? 1,
     params.limit ?? 10,
@@ -98,7 +98,7 @@ const listKey = createPostsCacheKey({
   contentType: ["blog_post"],
 });
 
-const postKey = ["notra", "post", "post_abc"] as const;
+const postKey = ["kolaria", "post", "post_abc"] as const;
 ```
 
 ## Invalidation rules
@@ -196,8 +196,8 @@ function useUpdatePost() {
       return response.json();
     },
     onSuccess: (_data, { postId }) => {
-      queryClient.invalidateQueries({ queryKey: ["notra", "posts"] });
-      queryClient.invalidateQueries({ queryKey: ["notra", "post", postId] });
+      queryClient.invalidateQueries({ queryKey: ["kolaria", "posts"] });
+      queryClient.invalidateQueries({ queryKey: ["kolaria", "post", postId] });
     },
   });
 }
